@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-#call: $ sudo su -c "bash <(wget -qO- https://.../install.sh latest)" root
+#call: $ sudo su -c "bash <(wget -qO- https://raw.githubusercontent.com/mosaiqone/Linux-runtime-install-script/main/install.sh latest)" root
 
 ################################################################################
 # Parameters
