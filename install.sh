@@ -24,9 +24,6 @@ readonly NC='\e[0m'
 # Function Definition
 ################################################################################
 check_root_priviliges() {
-    local -r RED='\e[1;31m'
-    local -r NC='\e[0m'
-
     if [ "$EUID" -eq 0 ] && [ -z ${SUDO_USER:+set} ] ; then
         readonly SCRIPT_USER=root
         readonly SCRIPT_USER_HOME=/root
