@@ -339,7 +339,7 @@ log_warning() {
 #TODO: check log file (headline,...)
 
 check_root_priviliges
-check_runtime_version_given $1
+check_runtime_version_given
 create_nupano_folder
 create_log_file
 #welcome_message
