@@ -165,7 +165,7 @@ create_docker_compose_file() {
 
     local COMMENT_IF_UUID_IS_USED=""
 
-    if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "n"; then
+    if ! evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
         log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
         local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
         while true; do
