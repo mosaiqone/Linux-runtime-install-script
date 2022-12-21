@@ -122,7 +122,40 @@ get_checked_user_input() {
 }
 
 
+evaluate_yes_no_answer() {
+    local -r PROMPT=$1
+    local -r DEFAULT=$2
 
+    while true ; do
+        read -p "$PROMPT " answer
+
+        # use default on empty answer
+        if [ -z ${answer:+set} ] ; then
+            answer=$DEFAULT
+        fi
+
+        answer=$(trim "$answer")
+        answer=$(make_lowercase "$answer")
+
+        if [ "$answer" = 'y' ] || [ "$answer" == "yes" ] ; then
+            return 0
+        fi
+
+        if [ "$answer" = 'n' ] || [ "$answer" = "no" ] ; then
+            return 1
+        fi
+
+        printf "${RED} -> Invalid answer, please enter 'yes' or 'no'!${NC}\n" >&2
+    done
+}
+
+trim() {
+    echo $(echo "$1" | xargs -0)
+}
+
+make_lowercase() {
+    echo $(echo "$1" | tr '[:upper:]' '[:lower:]')
+}
 
 
 create_docker_compose_file() {
