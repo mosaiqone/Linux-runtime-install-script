@@ -260,9 +260,6 @@ create_docker_compose_file() {
     log_message "File content:"
     log_message "$FILE_CONTENT"
     log_success "created docker-compose file"
-    #log_message "Restrict docker-compose file permissions to readonly…"
-    #chmod 444 "$TYPEPLATE_FILE_PATH"
-    #log_success "set new file permissions"
 }
 
 install_nupano_runtime() {
@@ -339,7 +336,7 @@ log_warning() {
 #TODO: check log file (headline,...)
 
 check_root_priviliges
-check_runtime_version_given
+check_runtime_version_given "$1"
 create_nupano_folder
 create_log_file
 #welcome_message
