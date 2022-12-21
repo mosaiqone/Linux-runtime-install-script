@@ -207,7 +207,7 @@ create_docker_compose_file() {
     readonly HARDWARE_MODEL_NAME="$hardwareModelName"
     readonly HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
 
-    if [ -z "$hardwareSerialNumber" ] then
+    if [ -z "$hardwareSerialNumber" ]; then
         COMMENT_IF_UUID_IS_USED="#"
     else
         COMMENT_IF_UUID_IS_USED=""
