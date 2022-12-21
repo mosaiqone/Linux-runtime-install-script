@@ -160,12 +160,15 @@ make_lowercase() {
 
 create_docker_compose_file() {
     log_headline "Configuring the Runtime..."
-
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
 
     local COMMENT_IF_UUID_IS_USED=""
+    local HARDWARE_MANUFACTURER=""
+    local HARDWARE_MANUFACTURER_URL=""
+    local HARDWARE_MODEL_NAME=""
+    local HARDWARE_SERIAL_NUMBER=""
 
-    if ! evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
+    if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
         log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
         local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
         while true; do
@@ -192,20 +195,20 @@ create_docker_compose_file() {
             log_message_safe "Serial number: '${hardwareSerialNumber}'"
             
             if evaluate_yes_no_answer "Are you sure that the entered inputs are correct? (Yes/no)" "y"; then
+                HARDWARE_MANUFACTURER="$hardwareManufacturer"
+                HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
+                HARDWARE_MODEL_NAME="$hardwareModelName"
+                HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
                 break
             fi
         done
     else
-        "${hardwareManufacturer}"="N/A"
-        "${hardwareManufacturerUrl}"="N/A"
-        "${hardwareModelName}"="Generic PC"
-        "${hardwareSerialNumber}"=""
+        HARDWARE_MANUFACTURER="N/A"
+        HARDWARE_MANUFACTURER_URL="N/A"
+        HARDWARE_MODEL_NAME="Generic PC"
+        HARDWARE_SERIAL_NUMBER=""
     fi
 
-    readonly HARDWARE_MANUFACTURER="$hardwareManufacturer"
-    readonly HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
-    readonly HARDWARE_MODEL_NAME="$hardwareModelName"
-    readonly HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
 
     if [ -z "$hardwareSerialNumber" ]; then
         COMMENT_IF_UUID_IS_USED="#"
