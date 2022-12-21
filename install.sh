@@ -168,8 +168,8 @@ create_docker_compose_file() {
     local HARDWARE_MODEL_NAME=""
     local HARDWARE_SERIAL_NUMBER=""
 
-    if [ evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y" -ne 0 ];
-    #if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
+    if [ evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y" -ne 0 ]; then
+        #if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
         log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
         local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
         while true; do
