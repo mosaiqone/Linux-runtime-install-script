@@ -361,4 +361,4 @@ install_docker
 create_docker_compose_file
 install_nupano_runtime
 
-#log_success "NUPANO RUNTIME INSTALLATION FINISHED"
+log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
