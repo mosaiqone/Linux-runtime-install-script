@@ -210,7 +210,7 @@ create_docker_compose_file() {
       nupano-runtime:
         user: root #required for windows to access docker.sock
         restart: always
-        image: public.ecr.aws/d9n0g1v8/nupano-runtime:latest
+        image: ${NUPANO_RUNTIME_DOCKER_IMAGE_NAME}:${NUPANO_RUNTIME_VERSION}
         environment:
           - logging.level.com.nupano=INFO #INFO, DEBUG or TRACE
           - nupano.description.manufacturer=${HARDWARE_MANUFACTURER}
@@ -229,15 +229,15 @@ create_docker_compose_file() {
 
       nupano-discovery:
         restart: always
-        image: public.ecr.aws/d9n0g1v8/nupano-runtime-discovery:latest
+        image: ${NUPANO_RUNTIME_DISCOVERY_DOCKER_IMAGE_NAME}:${NUPANO_RUNTIME_VERSION}
         network_mode: host #-> SSDP
         environment:
-          - logging.level.com.nupano=INFO #INFO, dEBUG or TRACE
+          - logging.level.com.nupano=INFO #INFO, DEBUG or TRACE
 
       nupano-runtime-updater:
         user: root #required for windows to access docker.sock
         restart: always
-        image: public.ecr.aws/d9n0g1v8/nupano-runtime-updater:latest
+        image: ${NUPANO_RUNTIME_UPDATER_DOCKER_IMAGE_NAME}:${NUPANO_RUNTIME_VERSION}
         environment:
           - logging.level.com.nupano=INFO #INFO, DEBUG or TRACE
         volumes:
@@ -255,7 +255,6 @@ create_docker_compose_file() {
     volumes:
       nupano_data:
     " > "$DOCKER_COMPOSE_FILE_PATH"
-
 
     local -r FILE_CONTENT=$(cat "$DOCKER_COMPOSE_FILE_PATH")
     log_message "File content:"
@@ -340,7 +339,7 @@ log_warning() {
 #TODO: check log file (headline,...)
 
 check_root_priviliges
-#check_runtime_version_given $1
+check_runtime_version_given $1
 create_nupano_folder
 create_log_file
 #welcome_message
