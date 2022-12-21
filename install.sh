@@ -163,43 +163,56 @@ create_docker_compose_file() {
 
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
 
-    log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
-    local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
-    while true; do
-        get_checked_user_input "Please enter the hardware manufacturer name: " \
-            "$NAME_REGEX" \
-            "hardwareManufacturer"
+    local COMMENT_IF_UUID_IS_USED=""
 
-        get_checked_user_input "Please enter the hardware manufacturer URL: " \
-            '[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]' \
-            "hardwareManufacturerUrl"
+    if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "n"; then
+        log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
+        local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
+        while true; do
+            get_checked_user_input "Please enter the hardware manufacturer name: " \
+                "$NAME_REGEX" \
+                "hardwareManufacturer"
 
-        get_checked_user_input "Please enter the hardware model name: " \
-            "$NAME_REGEX" \
-            "hardwareModelName"
+            get_checked_user_input "Please enter the hardware manufacturer URL: " \
+                '[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]' \
+                "hardwareManufacturerUrl"
 
-        get_checked_user_input "Please enter the hardware serial number: " \
-            "$NAME_REGEX" \
-            "hardwareSerialNumber"
+            get_checked_user_input "Please enter the hardware model name: " \
+                "$NAME_REGEX" \
+                "hardwareModelName"
 
-        log_message "\nThe typeplate.xml file details are:\n" 
-        log_message_safe "Manufacturer name: '${hardwareManufacturer}'"
-        log_message_safe "Manufacturer URL: '${hardwareManufacturerUrl}'"
-        log_message_safe "Model name: '${hardwareModelName}'"
-        log_message_safe "Serial number: '${hardwareSerialNumber}'"
-        
-        if evaluate_yes_no_answer "Are you sure that the entered inputs are correct? (Yes/no)" "y"; then
-            break
-        fi
-    done
+            get_checked_user_input "Please enter the hardware serial number: " \
+                "$NAME_REGEX" \
+                "hardwareSerialNumber"
 
+            log_message "\nThe NUPANO Runtime parameters are:\n" 
+            log_message_safe "Manufacturer name: '${hardwareManufacturer}'"
+            log_message_safe "Manufacturer URL: '${hardwareManufacturerUrl}'"
+            log_message_safe "Model name: '${hardwareModelName}'"
+            log_message_safe "Serial number: '${hardwareSerialNumber}'"
+            
+            if evaluate_yes_no_answer "Are you sure that the entered inputs are correct? (Yes/no)" "y"; then
+                break
+            fi
+        done
+    else
+        "${hardwareManufacturer}"="N/A"
+        "${hardwareManufacturerUrl}"="N/A"
+        "${hardwareModelName}"="Generic PC"
+        "${hardwareSerialNumber}"=""
+    fi
 
     readonly HARDWARE_MANUFACTURER="$hardwareManufacturer"
     readonly HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
     readonly HARDWARE_MODEL_NAME="$hardwareModelName"
     readonly HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
 
-    readonly USE_UUID="#"
+    if [ -z "$hardwareSerialNumber" ] then
+        COMMENT_IF_UUID_IS_USED="#"
+    else
+        COMMENT_IF_UUID_IS_USED=""
+    fi
+
 
     log_message "Creating the Docker-Comnpose file..."
     echo "
@@ -216,7 +229,7 @@ create_docker_compose_file() {
           - nupano.description.manufacturer=${HARDWARE_MANUFACTURER}
           - nupano.description.manufacturer-url=${HARDWARE_MANUFACTURER_URL}
           - nupano.description.model-name=${HARDWARE_MODEL_NAME}
-          ${USE_UUID}- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER} #default: UUID of Runtime
+          ${COMMENT_IF_UUID_IS_USED}- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER} #default: UUID of Runtime
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock   # access to docker socket
           - nupano_data:/nupano                         # persist nupano runtime data
@@ -257,7 +270,7 @@ create_docker_compose_file() {
     " > "$DOCKER_COMPOSE_FILE_PATH"
 
     local -r FILE_CONTENT=$(cat "$DOCKER_COMPOSE_FILE_PATH")
-    log_message "File content:"
+    log_message "File content:\n"
     log_message "$FILE_CONTENT"
     log_success "created docker-compose file"
 }
