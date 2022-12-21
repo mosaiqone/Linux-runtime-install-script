@@ -213,9 +213,9 @@ create_docker_compose_file() {
         image: public.ecr.aws/d9n0g1v8/nupano-runtime:latest
         environment:
           - logging.level.com.nupano=INFO #INFO, DEBUG or TRACE
-          - nupano.description.manufacturer=${HARDWARE_MANUFACTURER:'Generic PC'}
-          - nupano.description.manufacturer-url=${HARDWARE_MANUFACTURER_URL:'Not specified'}
-          - nupano.description.model-name=${HARDWARE_MODEL_NAME:'Virtual Runtime'}
+          - nupano.description.manufacturer=${HARDWARE_MANUFACTURER:Generic PC}
+          - nupano.description.manufacturer-url=${HARDWARE_MANUFACTURER_URL:Not specified}
+          - nupano.description.model-name=${HARDWARE_MODEL_NAME:Virtual Runtime}
           ${USE_UUID}- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER:-} #default: UUID of Runtime
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock   # access to docker socket
