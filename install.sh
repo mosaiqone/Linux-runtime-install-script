@@ -210,7 +210,7 @@ create_docker_compose_file() {
     fi
 
 
-    if [ -z "$hardwareSerialNumber" ]; then
+    if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
         COMMENT_IF_UUID_IS_USED="#"
     else
         COMMENT_IF_UUID_IS_USED=""
