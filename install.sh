@@ -101,11 +101,27 @@ install_docker() {
     log_message "Initiate docker installation…" 
     apt-get install -q -y docker.io
     if [ $? -ne 0 ] ; then
-        log_failure "Docker installation failed. Aborting runtime installation…"
+        log_failure "Docker installation failed. Aborting Runtime installation…"
     fi
 
-    log_success "docker installation done"
+    log_success "Docker installation done"
 }
+
+
+install_docker_compose() {
+    log_headline "Install Docker Compose"
+    log_message "Initiate Docker Compose installation…" 
+
+    apt-get update
+    apt-get install -q -y docker-compose-plugin
+    if [ $? -ne 0 ] ; then
+        log_failure "Docker Compose installation failed. Aborting Runtime installation…"
+    fi
+
+    log_success "Docker Compose installation done"
+}
+
+
 
 get_checked_user_input() {
     local -r PROMPT=$1
@@ -358,6 +374,7 @@ create_log_file
 welcome_message
 ensure_dependencies
 install_docker
+install_docker_compose
 create_docker_compose_file
 install_nupano_runtime
 
