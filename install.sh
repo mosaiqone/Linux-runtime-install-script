@@ -17,70 +17,7 @@ readonly CYAN='\e[1;36m'
 readonly ORANGE='\e[1;33m'
 readonly NC='\e[0m'
 
-################################################################################
-# LOGGING Definitions
-################################################################################
 
-
-
-# only call once
-create_log_file() {
-    local -r DATE=$(date +"%Y-%m-%d_%H-%M-%S")
-    local -r LOG_FOLDER=${NUPANO_FOLDER}/${DATE}_install-logs/
-    readonly LOG_FILE=${LOG_FOLDER}logs.txt
-    mkdir -p "$LOG_FOLDER"
-    touch "$LOG_FILE"
-    printf "\nInstallation logs for this script will be found under folder : ${LOG_FOLDER}\n\n"
-
-    chown -R $SCRIPT_USER $NUPANO_FOLDER
-}
-
-log_message() {
-    printf "$1"
-    printf "$1" | sed -e 's/\x1b\[[0-9;]*m//g' >> $LOG_FILE 
-}
-
-log_message_safe() {
-    printf '%s\n' "$1"
-    printf '%s\n' "$1" | sed -e 's/\x1b\[[0-9;]*m//g' >> $LOG_FILE
-}
-
-log_headline() {
-    local -r TEXT=$1
-    local -r TEXT_LEN=${#1}
-    local -r HEADLINE_LEN=$(($TEXT_LEN+4))
-    local line=""
-    for (( i=0; i<$HEADLINE_LEN; ++i )); do
-        line="${line}#"
-    done
-    log_message "\n${CYAN}$line\n"
-    log_message "# $TEXT #"
-    log_message "\n$line${NC}\n"
-}
-
-log_success() {
-    local text=success
-    if [ ${1:+set} ]; then
-        text=$(trim "$1")
-    fi
-    log_message " ${GREEN}-> ${text}${NC}\n"
-}
-
-log_failure() {
-    local text=failure
-    if [ ${1:+set} ]; then
-        text=$(trim "$1")
-    fi
-    log_message " ${RED}-> ${text}${NC}\n"
-}
-
-log_warning() {
-    local text=failure
-    if [ ${1:+set} ]; then
-        text=$(trim "$1")
-    fi
-    log_message " ${ORANGE}-> ${text}${NC}\n"
-}
 
 
 ################################################################################
@@ -304,6 +241,69 @@ install_nupano_runtime() {
     wget -O "$DOCKER_COMPOSE_FILE_PATH" | docker-compose up 
 }
 
+
+################################################################################
+# LOGGING Definitions
+################################################################################
+
+# only call once
+create_log_file() {
+    local -r DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+    local -r LOG_FOLDER=${NUPANO_FOLDER}/${DATE}_install-logs/
+    readonly LOG_FILE=${LOG_FOLDER}logs.txt
+    mkdir -p "$LOG_FOLDER"
+    touch "$LOG_FILE"
+    printf "\nInstallation logs for this script will be found under folder : ${LOG_FOLDER}\n\n"
+
+    chown -R $SCRIPT_USER $NUPANO_FOLDER
+}
+
+log_message() {
+    printf "$1"
+    printf "$1" | sed -e 's/\x1b\[[0-9;]*m//g' >> $LOG_FILE 
+}
+
+log_message_safe() {
+    printf '%s\n' "$1"
+    printf '%s\n' "$1" | sed -e 's/\x1b\[[0-9;]*m//g' >> $LOG_FILE
+}
+
+log_headline() {
+    local -r TEXT=$1
+    local -r TEXT_LEN=${#1}
+    local -r HEADLINE_LEN=$(($TEXT_LEN+4))
+    local line=""
+    for (( i=0; i<$HEADLINE_LEN; ++i )); do
+        line="${line}#"
+    done
+    log_message "\n${CYAN}$line\n"
+    log_message "# $TEXT #"
+    log_message "\n$line${NC}\n"
+}
+
+log_success() {
+    local text=success
+    if [ ${1:+set} ]; then
+        text=$(trim "$1")
+    fi
+    log_message " ${GREEN}-> ${text}${NC}\n"
+}
+
+log_failure() {
+    local text=failure
+    if [ ${1:+set} ]; then
+        text=$(trim "$1")
+    fi
+    log_message " ${RED}-> ${text}${NC}\n"
+}
+
+log_warning() {
+    local text=failure
+    if [ ${1:+set} ]; then
+        text=$(trim "$1")
+    fi
+    log_message " ${ORANGE}-> ${text}${NC}\n"
+}
 
 ################################################################################
 # Installation Script Sequence
