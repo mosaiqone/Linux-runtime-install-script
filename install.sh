@@ -168,7 +168,6 @@ create_docker_compose_file() {
     local HARDWARE_MODEL_NAME=""
     local HARDWARE_SERIAL_NUMBER=""
 
-    #if [ evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y" -ne 0 ]; then
     if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
         HARDWARE_MANUFACTURER="N/A"
         HARDWARE_MANUFACTURER_URL="N/A"
@@ -356,10 +355,10 @@ check_root_priviliges
 check_runtime_version_given "$1"
 create_nupano_folder
 create_log_file
-#welcome_message
-#ensure_dependencies
-#install_docker
-create_docker_compose_file                          #überarbeiten und einzeln testen: möglichkeit für default
-#install_nupano_runtime
+welcome_message
+ensure_dependencies
+install_docker
+create_docker_compose_file
+install_nupano_runtime
 
 #log_success "NUPANO RUNTIME INSTALLATION FINISHED"
