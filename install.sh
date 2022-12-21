@@ -169,7 +169,7 @@ create_docker_compose_file() {
     local HARDWARE_SERIAL_NUMBER=""
 
     #if [ evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y" -ne 0 ]; then
-    if ! evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
+    if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
         HARDWARE_MANUFACTURER="N/A"
         HARDWARE_MANUFACTURER_URL="N/A"
         HARDWARE_MODEL_NAME="Generic PC"
