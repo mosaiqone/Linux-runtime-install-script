@@ -6,9 +6,9 @@ set -eu
 ################################################################################
 # Parameters
 ################################################################################
-readonly NUPANO_RUNTIME_IMAGE_URL=public.ecr.aws/d9n0g1v8/nupano-runtime
-readonly NUPANO_RUNTIME_DISCOVERY_IMAGE_URL=public.ecr.aws/d9n0g1v8/nupano-runtime-discovery
-readonly NUPANO_RUNTIME_UPDATER_IMAGE_URL=public.ecr.aws/d9n0g1v8/nupano-runtime-updater
+readonly NUPANO_RUNTIME_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime
+readonly NUPANO_RUNTIME_DISCOVERY_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime-discovery
+readonly NUPANO_RUNTIME_UPDATER_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime-updater
 
 # Color Definitions
 readonly RED='\e[1;31m'
@@ -138,11 +138,6 @@ welcome_message() {
 }
 
 
-set_docker_proxy() {
-
-
-}
-
 ensure_dependencies() {
     log_headline "Installing required dependencies"
     ensure_dependency "wget" "wget --version"
@@ -197,75 +192,51 @@ get_checked_user_input() {
 
 
 create_docker_compose_file() {
-    log_headline "Create Typeplate File"
+    log_headline "Configuring the Runtime..."
 
-    NUPANO_RUNTIME_VERSION
+    readonly -r DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
 
-
-   log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
+    log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
     local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
     while true; do
         get_checked_user_input "Please enter the hardware manufacturer name: " \
             "$NAME_REGEX" \
-            "typeplateManufacturer"
+            "hardwareManufacturer"
 
         get_checked_user_input "Please enter the hardware manufacturer URL: " \
             '[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]' \
-            "typeplateManufacturerUrl"
+            "hardwareManufacturerUrl"
 
         get_checked_user_input "Please enter the hardware model name: " \
             "$NAME_REGEX" \
-            "typeplateModelName"
+            "hardwareModelName"
 
         get_checked_user_input "Please enter the hardware serial number: " \
             "$NAME_REGEX" \
-            "typeplateSerialNumber"
+            "hardwareSerialNumber"
 
         log_message "\nThe typeplate.xml file details are:\n" 
-        log_message_safe "Manufacturer name: '${typeplateManufacturer}'"
-        log_message_safe "Manufacturer URL: '${typeplateManufacturerUrl}'"
-        log_message_safe "Model name: '${typeplateModelName}'"
-        log_message_safe "Serial number: '${typeplateSerialNumber}'"
+        log_message_safe "Manufacturer name: '${hardwareManufacturer}'"
+        log_message_safe "Manufacturer URL: '${hardwareManufacturerUrl}'"
+        log_message_safe "Model name: '${hardwareModelName}'"
+        log_message_safe "Serial number: '${hardwareSerialNumber}'"
         
-        if evaluate_yes_no_answer "Are you sure that the entered input is correct? (Yes/no)" "y"; then
+        if evaluate_yes_no_answer "Are you sure that the entered inputs are correct? (Yes/no)" "y"; then
             break
         fi
     done
 
 
+    readonly -r HARDWARE_MANUFACTURER="$hardwareManufacturer"
+    readonly -r HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
+    readonly -r HARDWARE_MODEL_NAME="$hardwareModelName"
+    readonly -r HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
+
+    readonly -r USE_UUID="#"
 
 
-    local -r TYPEPLATE_DIRECTORY=/etc/nupano
-    local -r TYPEPLATE_FILE_PATH="${TYPEPLATE_DIRECTORY}/typeplate.xml"
-
-    log_message "Create typeplate directory '${TYPEPLATE_DIRECTORY}'…"
-    mkdir -p /etc/nupano  
-    log_success "created typeplate directory"
-
-    log_message "Create random UUID for the runtime…"
-    local -r RANDOM_UUID=$(cat /proc/sys/kernel/random/uuid)
-    log_message "New UUID: '${RANDOM_UUID}'"
-    log_success "new UUID created"
-
-    log_message "Create typeplate file…"
-    echo "<?xml version=\"1.0\"?>
-    <root xmlns=\"urn:schemas-upnp-org:device-1-0\" configId=\"configuration number\">
-        <specVersion>
-            <major>2</major>
-            <minor>0</minor>
-        </specVersion>
-        <device>
-            <deviceType>urn:nupano-com:device:nupano-runtime:1</deviceType>
-            <friendlyName>NUPANO Runtime</friendlyName>
-            <manufacturer>${TYPEPLATE_MANUFACTURER:-}</manufacturer>
-            <manufacturerURL>${TYPEPLATE_MANUFACTURER_URL:-}</manufacturerURL>
-            <modelName>${TYPEPLATE_MODEL_NAME:-}</modelName>
-            <serialNumber>${TYPEPLATE_SERIAL_NUMBER:-}</serialNumber>
-            <UDN>uuid:$RANDOM_UUID</UDN>
-        </device>
-    </root>
-    " > "$TYPEPLATE_FILE_PATH"
-
+    log_message "Creating the Docker-Comnpose file..."
+    echo "
     version: '3.3'
 
     services:
@@ -276,10 +247,10 @@ create_docker_compose_file() {
         image: public.ecr.aws/d9n0g1v8/nupano-runtime:latest
         environment:
           - logging.level.com.nupano=INFO #INFO, DEBUG or TRACE
-          - nupano.description.manufacturer=Lenze SE
-          - nupano.description.manufacturer-url=www.lenze.com
-          - nupano.description.model-name=Virtual Runtime
-          #- nupano.description.serial-number #default: UUID of Runtime
+          - nupano.description.manufacturer=${HARDWARE_MANUFACTURER:'Generic PC'}
+          - nupano.description.manufacturer-url=${HARDWARE_MANUFACTURER_URL:'Not specified'}
+          - nupano.description.model-name=${HARDWARE_MODEL_NAME:'Virtual Runtime'}
+          ${USE_UUID}- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER:-} #default: UUID of Runtime
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock   # access to docker socket
           - nupano_data:/nupano                         # persist nupano runtime data
@@ -317,20 +288,19 @@ create_docker_compose_file() {
 
     volumes:
       nupano_data:
+    " > "$DOCKER_COMPOSE_FILE_PATH"
 
 
-
-    local -r FILE_CONTENT=$(cat "$TYPEPLATE_FILE_PATH")
+    local -r FILE_CONTENT=$(cat "$DOCKER_COMPOSE_FILE_PATH")
     log_message "File content:"
     log_message "$FILE_CONTENT"
-    log_success "created typeplate file"
-    log_message "Restrict typeplate file permissions to readonly…"
-    chmod 444 "$TYPEPLATE_FILE_PATH"
-    log_success "set new file permissions"
+    log_success "created docker-compose file"
+    #log_message "Restrict docker-compose file permissions to readonly…"
+    #chmod 444 "$TYPEPLATE_FILE_PATH"
+    #log_success "set new file permissions"
 }
 
 install_nupano_runtime() {
-    local -r DOCKER_COMPOSE_FILE_PATH=${NUPANO_FOLDER}/docker-compose.yml
     wget -O "$DOCKER_COMPOSE_FILE_PATH" | docker-compose up 
 }
 
@@ -340,15 +310,14 @@ install_nupano_runtime() {
 ################################################################################
 #TODO: check log file (headline,...)
 
-check_root_priviliges
-check_runtime_version_given
+#check_root_priviliges
+#check_runtime_version_given $1
 create_nupano_folder
 create_log_file
-welcome_message
-set_docker_proxy                                    #TODO: set proxy for docker
-ensure_dependencies
-install_docker
+#welcome_message
+#ensure_dependencies
+#install_docker
 create_docker_compose_file                          #überarbeiten und einzeln testen: möglichkeit für default
-install_nupano_runtime
+#install_nupano_runtime
 
-log_success "NUPANO RUNTIME INSTALLATION FINISHED"
+#log_success "NUPANO RUNTIME INSTALLATION FINISHED"
