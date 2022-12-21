@@ -128,7 +128,7 @@ get_checked_user_input() {
 create_docker_compose_file() {
     log_headline "Configuring the Runtime..."
 
-    readonly -r DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
+    readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
 
     log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
     local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
@@ -161,13 +161,12 @@ create_docker_compose_file() {
     done
 
 
-    readonly -r HARDWARE_MANUFACTURER="$hardwareManufacturer"
-    readonly -r HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
-    readonly -r HARDWARE_MODEL_NAME="$hardwareModelName"
-    readonly -r HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
+    readonly HARDWARE_MANUFACTURER="$hardwareManufacturer"
+    readonly HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
+    readonly HARDWARE_MODEL_NAME="$hardwareModelName"
+    readonly HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
 
-    readonly -r USE_UUID="#"
-
+    readonly USE_UUID="#"
 
     log_message "Creating the Docker-Comnpose file..."
     echo "
