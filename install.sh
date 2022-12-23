@@ -97,30 +97,52 @@ ensure_dependency() {
 }
 
 install_docker() {
-    log_headline "Install Docker"
+    log_headline "Install Docker and Docker Compose"
     log_message "Initiate docker installation…" 
-    apt-get install -q -y docker.io
+
+    log_message "Uninstall old docker versions"
+    apt-get -q -y remove docker docker-engine docker.io containerd runc
+
     if [ $? -ne 0 ] ; then
-        log_failure "Docker installation failed. Aborting Runtime installation…"
+        log_failure "Uninstall of old docker versions. Aborting Runtime installation…"
+    fi
+
+    log_message "Uninstall docker engine"
+    apt-get -q -y purge docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+    if [ $? -ne 0 ] ; then
+        log_failure "Uninstall docker engine failed. Aborting Runtime installation…"
+    fi
+
+    rm -rf /var/lib/docker
+    rm -rf /var/lib/containerd
+
+    log_message "Update and install required tools"
+    apt-get -q -y update
+    apt-get -q -y install ca-certificates curl gnupg lsb-release
+
+    if [ $? -ne 0 ] ; then
+        log_failure "Update and install of required tools failed. Aborting Runtime installation…"
+    fi
+
+    log_message "Add Docker's official GPG key"
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+    log_message "setup Docker repository"
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    log_message "Install Docker Engine and Docker compose"
+    chmod a+r /etc/apt/keyrings/docker.gpg
+    apt-get -q -y update
+    apt-get -q -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+    if [ $? -ne 0 ] ; then
+        log_failure "Docker Engine and Docker compose installation failed. Aborting Runtime installation…"
     fi
 
     log_success "Docker installation done"
 }
-
-
-install_docker_compose() {
-    log_headline "Install Docker Compose"
-    log_message "Initiate Docker Compose installation…" 
-
-    apt-get update
-    apt-get install -q -y docker-compose-plugin
-    if [ $? -ne 0 ] ; then
-        log_failure "Docker Compose installation failed. Aborting Runtime installation…"
-    fi
-
-    log_success "Docker Compose installation done"
-}
-
 
 
 get_checked_user_input() {
@@ -374,7 +396,6 @@ create_log_file
 welcome_message
 ensure_dependencies
 install_docker
-install_docker_compose
 create_docker_compose_file
 install_nupano_runtime
 
