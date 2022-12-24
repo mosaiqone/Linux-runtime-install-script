@@ -313,11 +313,11 @@ create_docker_compose_file() {
     local -r FILE_CONTENT=$(cat "$DOCKER_COMPOSE_FILE_PATH")
     log_message "File content:\n"
     log_message "$FILE_CONTENT"
-    log_success "created docker-compose file"
+    log_success "Docker-compose file has been created!"
 }
 
 install_nupano_runtime() {
-    wget -O "$DOCKER_COMPOSE_FILE_PATH" | docker-compose up 
+    wget -O "$DOCKER_COMPOSE_FILE_PATH" | docker compose up 
 }
 
 
