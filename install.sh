@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-#call: $ sudo su -c "bash <(wget -qO- https://raw.githubusercontent.com/mosaiqone/Linux-runtime-install-script/main/install.sh) latest" root
+#call: $ sudo su -c "bash <(wget -qO- https://paulin.at/install.sh) latest" root
 
 ################################################################################
 # Parameters
@@ -117,6 +117,8 @@ install_docker() {
     rm -rf /var/lib/docker
     rm -rf /var/lib/containerd
 
+    log_success "Uninstalling of Docker done"
+
     log_message "Update and install required tools"
     apt-get -q -y update
     apt-get -q -y install ca-certificates curl gnupg lsb-release
@@ -124,6 +126,8 @@ install_docker() {
     if [ $? -ne 0 ] ; then
         log_failure "Update and install of required tools failed. Aborting Runtime installation…"
     fi
+
+    log_success "Update and installation required tools done"
 
     log_message "Add Docker's official GPG key"
     mkdir -p /etc/apt/keyrings
