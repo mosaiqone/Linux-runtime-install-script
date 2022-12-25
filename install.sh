@@ -99,10 +99,10 @@ ensure_dependency() {
 uninstall_docker() {
     log_headline "Uninstalling previously installed Docker version"
     
-    log_message "Initiate uninstall of docker..." 
+    #log_message "Initiate uninstall of docker..." 
     #apt-get -q -y remove docker docker-engine docker.io containerd runc || true
     apt-get -q -y remove docker || true
-    #apt-get -q -y remove docker-engine || true
+    apt-get -q -y remove docker-engine || true
     apt-get -q -y remove docker.io || true
     apt-get -q -y remove containerd || true
     apt-get -q -y remove runc || true
@@ -111,19 +111,19 @@ uninstall_docker() {
         log_failure "Uninstall of old docker versions. Aborting Runtime installation…"
     fi
 
-    log_message "Uninstall docker engine"
+    #log_message "Uninstall docker engine"
     #apt-get -q -y purge docker-ce docker-ce-cli containerd.io docker-compose-plugin
-    apt-get -q -y purge docker-ce || true
-    apt-get -q -y purge docker-ce-cli || true
-    apt-get -q -y purge containerd.io || true
-    apt-get -q -y purge docker-compose-plugin || true
+    #apt-get -q -y purge docker-ce || true
+    #apt-get -q -y purge docker-ce-cli || true
+    #apt-get -q -y purge containerd.io || true
+    #apt-get -q -y purge docker-compose-plugin || true
 
-    if [ $? -ne 0 ] ; then
-        log_failure "Uninstall docker engine failed. Aborting Runtime installation…"
-    fi
+    #if [ $? -ne 0 ] ; then
+    #    log_failure "Uninstall docker engine failed. Aborting Runtime installation…"
+    #fi
 
-    rm -rf /var/lib/docker
-    rm -rf /var/lib/containerd
+    #rm -rf /var/lib/docker
+    #rm -rf /var/lib/containerd
 
     log_success "Uninstalling of Docker done"
 }
