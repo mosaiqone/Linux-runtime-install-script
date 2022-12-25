@@ -96,19 +96,27 @@ ensure_dependency() {
     fi
 }
 
-install_docker() {
-    log_headline "Install Docker and Docker Compose"
-    log_message "Initiate docker installation…" 
+uninstall_docker() {
+    log_headline "Uninstalling previously installed Docker version"
+    log_message "Initiate uninstall of docker..." 
 
-    log_message "Uninstall old docker versions"
-    apt-get -q -y remove docker docker-engine docker.io containerd runc
+    #apt-get -q -y remove docker docker-engine docker.io containerd runc || true
+    apt-get -q -y remove docker || true
+    apt-get -q -y remove docker-engine || true
+    apt-get -q -y remove docker.io || true
+    apt-get -q -y containerd || true
+    apt-get -q -y runc || true
 
     if [ $? -ne 0 ] ; then
         log_failure "Uninstall of old docker versions. Aborting Runtime installation…"
     fi
 
     log_message "Uninstall docker engine"
-    apt-get -q -y purge docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    #apt-get -q -y purge docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    apt-get -q -y purge docker-ce || true
+    apt-get -q -y purge docker-ce-cli || true
+    apt-get -q -y purge containerd.io || true
+    apt-get -q -y purge docker-compose-plugin || true
 
     if [ $? -ne 0 ] ; then
         log_failure "Uninstall docker engine failed. Aborting Runtime installation…"
@@ -118,7 +126,10 @@ install_docker() {
     rm -rf /var/lib/containerd
 
     log_success "Uninstalling of Docker done"
+}
 
+install_docker() {
+    log_headline "Install Docker and Docker Compose"
     log_message "Update and install required tools"
     apt-get -q -y update
     apt-get -q -y install ca-certificates curl gnupg lsb-release
@@ -129,6 +140,7 @@ install_docker() {
 
     log_success "Update and installation required tools done"
 
+    log_message "Initiate docker installation…" 
     log_message "Add Docker's official GPG key"
     mkdir -p /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -139,6 +151,7 @@ install_docker() {
     log_message "Install Docker Engine and Docker compose"
     chmod a+r /etc/apt/keyrings/docker.gpg
     apt-get -q -y update
+    
     apt-get -q -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
     if [ $? -ne 0 ] ; then
@@ -320,8 +333,8 @@ create_docker_compose_file() {
     log_success "Docker-compose file has been created!"
 }
 
-install_nupano_runtime() {
-    wget -O "$DOCKER_COMPOSE_FILE_PATH" | docker compose up 
+start_nupano_runtime() {
+    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up
 }
 
 
@@ -399,8 +412,9 @@ create_nupano_folder
 create_log_file
 welcome_message
 ensure_dependencies
+uninstall_docker
 install_docker
 create_docker_compose_file
-install_nupano_runtime
+start_nupano_runtime
 
 log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
