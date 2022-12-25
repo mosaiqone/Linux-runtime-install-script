@@ -102,7 +102,7 @@ uninstall_docker() {
     log_message "Initiate uninstall of docker..." 
     #apt-get -q -y remove docker docker-engine docker.io containerd runc || true
     apt-get -q -y remove docker || true
-    apt-get -q -y remove docker-engine || true
+    #apt-get -q -y remove docker-engine || true
     apt-get -q -y remove docker.io || true
     apt-get -q -y remove containerd || true
     apt-get -q -y remove runc || true
