@@ -412,7 +412,7 @@ create_nupano_folder
 create_log_file
 welcome_message
 ensure_dependencies
-uninstall_docker
+#uninstall_docker
 install_docker
 create_docker_compose_file
 start_nupano_runtime
