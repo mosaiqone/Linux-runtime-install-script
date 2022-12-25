@@ -97,10 +97,11 @@ ensure_dependency() {
 }
 
 uninstall_docker() {
+    #source: https://docs.docker.com/engine/install/ubuntu/
     log_headline "Uninstalling previously installed Docker version"
-    
-    #log_message "Initiate uninstall of docker..." 
+    log_message "Initiate uninstall of docker..." 
     #apt-get -q -y remove docker docker-engine docker.io containerd runc || true
+    #call each command inividually to ensure continuation in case a removal fails (e.g. because the software was not installed)
     apt-get -q -y remove docker || true
     apt-get -q -y remove docker-engine || true
     apt-get -q -y remove docker.io || true
@@ -111,24 +112,12 @@ uninstall_docker() {
         log_failure "Uninstall of old docker versions. Aborting Runtime installation…"
     fi
 
-    #log_message "Uninstall docker engine"
-    #apt-get -q -y purge docker-ce docker-ce-cli containerd.io docker-compose-plugin
-    #apt-get -q -y purge docker-ce || true
-    #apt-get -q -y purge docker-ce-cli || true
-    #apt-get -q -y purge containerd.io || true
-    #apt-get -q -y purge docker-compose-plugin || true
-
-    #if [ $? -ne 0 ] ; then
-    #    log_failure "Uninstall docker engine failed. Aborting Runtime installation…"
-    #fi
-
-    #rm -rf /var/lib/docker
-    #rm -rf /var/lib/containerd
-
     log_success "Uninstalling of Docker done"
 }
 
 install_docker() {
+    #source: https://docs.docker.com/engine/install/ubuntu/
+
     log_headline "Install Docker and Docker Compose"
     log_message "Update and install required tools"
     apt-get -q -y update
