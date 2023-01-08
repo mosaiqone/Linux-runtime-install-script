@@ -321,7 +321,7 @@ create_docker_compose_file() {
 }
 
 start_nupano_runtime() {
-    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up  -pull always
+    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up  --pull always
 }
 
 
