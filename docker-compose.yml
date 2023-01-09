@@ -1,8 +1,7 @@
-version: '3.3'
-
+name: nupano
 services:
 
-  nupano-runtime:
+  runtime:
     user: root #required for windows to access docker.sock
     restart: always
     image: public.ecr.aws/d9n0g1v8/nupano-runtime:latest
@@ -22,14 +21,14 @@ services:
       - 61101:61101/tcp
       - 61106:61106/tcp
 
-  nupano-discovery:
+  discovery:
     restart: always
     image: public.ecr.aws/d9n0g1v8/nupano-runtime-discovery:latest
     network_mode: host #-> SSDP
     environment:
       - logging.level.com.nupano=INFO #INFO or DEBUG
 
-  nupano-runtime-updater:
+  updater:
     user: root #required for windows to access docker.sock
     restart: always
     image: public.ecr.aws/d9n0g1v8/nupano-runtime-updater:latest
@@ -45,6 +44,7 @@ services:
 
 networks:
   nupano_network:
+    name: nupano
     driver: bridge
 
 volumes:
