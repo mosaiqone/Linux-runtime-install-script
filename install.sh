@@ -4,10 +4,6 @@ set -eu
 ################################################################################
 # Parameters
 ################################################################################
-readonly NUPANO_RUNTIME_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime
-readonly NUPANO_RUNTIME_DISCOVERY_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime-discovery
-readonly NUPANO_RUNTIME_UPDATER_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime-updater
-
 readonly NUPANO_DOCKER_COMPOSE_FILE_URL=https://raw.githubusercontent.com/mosaiqone/Linux-runtime-install-script/main/docker-compose.yml
 
 # Color Definitions
@@ -397,13 +393,11 @@ log_warning() {
 ################################################################################
 # Installation Script Sequence
 ################################################################################
-
-printf '17:32'
-
 check_root_priviliges
 check_runtime_version_given "$1"
 create_nupano_folder
 create_log_file
+log_message "17:32"
 welcome_message
 ensure_dependencies
 #uninstall_docker
