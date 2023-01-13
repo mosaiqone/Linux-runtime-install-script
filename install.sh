@@ -398,7 +398,7 @@ log_warning() {
 # Installation Script Sequence
 ################################################################################
 
-log_message "17:32" 
+printf '17:32'
 
 check_root_priviliges
 check_runtime_version_given "$1"
