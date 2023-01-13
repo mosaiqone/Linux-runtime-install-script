@@ -397,7 +397,8 @@ log_warning() {
 ################################################################################
 # Installation Script Sequence
 ################################################################################
-#TODO: check log file (headline,...)
+
+log_message "17:32" 
 
 check_root_priviliges
 check_runtime_version_given "$1"
