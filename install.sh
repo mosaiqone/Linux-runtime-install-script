@@ -8,6 +8,8 @@ readonly NUPANO_RUNTIME_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime
 readonly NUPANO_RUNTIME_DISCOVERY_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime-discovery
 readonly NUPANO_RUNTIME_UPDATER_DOCKER_IMAGE_NAME=public.ecr.aws/d9n0g1v8/nupano-runtime-updater
 
+readonly NUPANO_DOCKER_COMPOSE_FILE_URL=https://raw.githubusercontent.com/mosaiqone/Linux-runtime-install-script/main/docker-compose.yml
+
 # Color Definitions
 readonly RED='\e[1;31m'
 readonly GREEN='\e[1;32m'
@@ -200,7 +202,11 @@ make_lowercase() {
 }
 
 
-create_docker_compose_file() {
+get_docker_compose_file() {
+    wget -O "${NUPANO_FOLDER}/docker-compose.yml" "${NUPANO_DOCKER_COMPOSE_FILE_URL}"
+}
+
+modify_docker_compose_file() {
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
 
@@ -321,7 +327,7 @@ create_docker_compose_file() {
 }
 
 start_nupano_runtime() {
-    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up  --pull always
+    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up
 }
 
 
@@ -399,9 +405,10 @@ create_nupano_folder
 create_log_file
 welcome_message
 ensure_dependencies
-uninstall_docker
-install_docker
-create_docker_compose_file
-start_nupano_runtime
+#uninstall_docker
+#install_docker
+get_docker_compose_file
+#modify_docker_compose_file
+#start_nupano_runtime
 
 log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
