@@ -55,3 +55,13 @@
     local -r FILE_CONTENT=$(cat "$DOCKER_COMPOSE_FILE_PATH")
     log_message "File content:\n"
     log_message "$FILE_CONTENT"
+
+
+            #special handling of serial number if not given, the UUID of the Runtime will be used
+        if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
+            #serial number not given -> do nothing ->  UUID will be used
+            sed -i -e "s/#- nupano.description.serial-number=/#- nupano.description.serial-number=/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        else
+            #serial number given -> use data
+            sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        fi
