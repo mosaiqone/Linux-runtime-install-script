@@ -203,7 +203,7 @@ get_docker_compose_file() {
 }
 
 modify_docker_compose_file() {
-    log_headline "17:05"
+    log_headline "17:11"
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
     local HARDWARE_MANUFACTURER=""
