@@ -156,7 +156,7 @@ get_checked_user_input() {
         if [[ $input_value =~ $CHECK_REGEX ]]; then
             break
         fi
-        log_message_safe "Invalid user input, please enter a value that applies to this regex: '$CHECK_REGEX'"
+        log_message_safe "Invalid user input, please enter a value that applies to this syntax: '$CHECK_REGEX'"
     done
     declare -g "$RETURN_VALUE_NAME"="$input_value"
 }
@@ -203,7 +203,6 @@ get_docker_compose_file() {
 }
 
 modify_docker_compose_file() {
-    log_headline "17:40"
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
     local HARDWARE_MANUFACTURER=""
@@ -221,7 +220,7 @@ modify_docker_compose_file() {
                 "$NAME_REGEX" \
                 "hardwareManufacturer"
 
-            get_checked_user_input "Please enter the hardware manufacturer URL: " \
+            get_checked_user_input "Please enter the hardware manufacturer URL without 'https://': " \
                 '[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]' \
                 "hardwareManufacturerUrl"
 
@@ -339,10 +338,10 @@ create_nupano_folder
 create_log_file
 welcome_message
 ensure_dependencies
-#uninstall_docker
-#install_docker
+uninstall_docker
+install_docker
 get_docker_compose_file
 modify_docker_compose_file
-#start_nupano_runtime
+start_nupano_runtime
 
 log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
