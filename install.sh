@@ -254,12 +254,12 @@ modify_docker_compose_file() {
 
     log_message "Modifying the Docker-Comnpose file..."
     #set Runtime image version
-    sed -i -e "s/:latest/:'${NUPANO_RUNTIME_VERSION}'/g" docker-compose.yml
+    sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" docker-compose.yml
     
     #set environmental variable
-    sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer='${HARDWARE_MANUFACTURER}'/g" docker-compose.yml
-    sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer='${HARDWARE_MANUFACTURER_URL}'/g" docker-compose.yml
-    sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer='${HARDWARE_MODEL_NAME}'/g" docker-compose.yml
+    sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" docker-compose.yml
+    sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER_URL}/g" docker-compose.yml
+    sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer=${HARDWARE_MODEL_NAME}/g" docker-compose.yml
 
     #special handling of serial number if not given, the UUID of the Runtime will be used
     if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
@@ -267,7 +267,7 @@ modify_docker_compose_file() {
         sed -i -e "s/#- nupano.description.serial-number=/#- nupano.description.serial-number=/g" docker-compose.yml
     else
         #serial number given -> use data
-        sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number='${HARDWARE_SERIAL_NUMBER}'/g" docker-compose.yml
+        sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" docker-compose.yml
     fi
 
     log_success "Docker-compose file has been modified!"
@@ -348,7 +348,7 @@ check_root_priviliges
 check_runtime_version_given "$1"
 create_nupano_folder
 create_log_file
-log_message "16:46"
+log_message "17:01"
 welcome_message
 ensure_dependencies
 #uninstall_docker
