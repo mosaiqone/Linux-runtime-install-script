@@ -203,7 +203,7 @@ get_docker_compose_file() {
 }
 
 modify_docker_compose_file() {
-    log_headline "17:11"
+    log_headline "17:40"
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
     local HARDWARE_MANUFACTURER=""
@@ -254,8 +254,8 @@ modify_docker_compose_file() {
         
         #set environmental variable
         sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
-        sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER_URL}/g" "${DOCKER_COMPOSE_FILE_PATH}"
-        sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer=${HARDWARE_MODEL_NAME}/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer-url=${HARDWARE_MANUFACTURER_URL}/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.model-name=${HARDWARE_MODEL_NAME}/g" "${DOCKER_COMPOSE_FILE_PATH}"
         sed -i -e "s/nupano.description.serial-number=/nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
 
         log_success "Docker-compose file has been modified!"
