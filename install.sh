@@ -348,8 +348,8 @@ check_root_priviliges
 check_runtime_version_given "$1"
 create_nupano_folder
 create_log_file
-log_message "17:01"
 welcome_message
+log_message "17:01"
 ensure_dependencies
 #uninstall_docker
 #install_docker
