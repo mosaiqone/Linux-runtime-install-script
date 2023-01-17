@@ -250,24 +250,15 @@ modify_docker_compose_file() {
 
         log_message "Modifying the Docker-Comnpose file..."
         #set Runtime image version
-        sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" DOCKER_COMPOSE_FILE_PATH
+        sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" "${DOCKER_COMPOSE_FILE_PATH}"
         
         #set environmental variable
-        sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" DOCKER_COMPOSE_FILE_PATH
-        sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER_URL}/g" DOCKER_COMPOSE_FILE_PATH
-        sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer=${HARDWARE_MODEL_NAME}/g" DOCKER_COMPOSE_FILE_PATH
-
-        #special handling of serial number if not given, the UUID of the Runtime will be used
-        if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
-            #serial number not given -> do nothing ->  UUID will be used
-            sed -i -e "s/#- nupano.description.serial-number=/#- nupano.description.serial-number=/g" DOCKER_COMPOSE_FILE_PATH
-        else
-            #serial number given -> use data
-            sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" DOCKER_COMPOSE_FILE_PATH
-        fi
+        sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER_URL}/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer=${HARDWARE_MODEL_NAME}/g" "${DOCKER_COMPOSE_FILE_PATH}"
+        sed -i -e "s/nupano.description.serial-number=/nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
 
         log_success "Docker-compose file has been modified!"
-
     fi
 }
 
