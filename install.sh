@@ -203,6 +203,7 @@ get_docker_compose_file() {
 }
 
 modify_docker_compose_file() {
+    log_headline "17:05"
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
 
@@ -349,7 +350,6 @@ check_runtime_version_given "$1"
 create_nupano_folder
 create_log_file
 welcome_message
-log_message "17:01"
 ensure_dependencies
 #uninstall_docker
 #install_docker
