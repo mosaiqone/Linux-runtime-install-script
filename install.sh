@@ -4,7 +4,7 @@ set -eu
 ################################################################################
 # Parameters
 ################################################################################
-readonly NUPANO_DOCKER_COMPOSE_FILE_URL=https://raw.githubusercontent.com/mosaiqone/Linux-runtime-install-script/main/docker-compose.yml
+readonly NUPANO_DOCKER_COMPOSE_FILE_URL=https://nupano-runtime-setup.s3.eu-central-1.amazonaws.com/docker-compose.yml
 
 # Color Definitions
 readonly RED='\e[1;31m'
@@ -262,7 +262,7 @@ modify_docker_compose_file() {
 }
 
 start_nupano_runtime() {
-    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up
+    docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up -d
 }
 
 
