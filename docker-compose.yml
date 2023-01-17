@@ -1,4 +1,4 @@
-#17:32
+#14:53
 name: nupano
 services:
 
@@ -8,10 +8,10 @@ services:
     image: public.ecr.aws/d9n0g1v8/nupano-runtime:latest
     environment:
       - logging.level.com.nupano=INFO #INFO or DEBUG
-      - nupano.description.manufacturer=N/A
-      - nupano.description.manufacturer-url=N/A
+      - nupano.description.manufacturer=not specified
+      - nupano.description.manufacturer-url=not specified
       - nupano.description.model-name=Generic PC
-      #- nupano.description.serial-number #default: UUID of Runtime
+      #- nupano.description.serial-number= #default: UUID of Runtime
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock   # access to docker socket
       - nupano_data:/nupano                         # persist nupano runtime data
