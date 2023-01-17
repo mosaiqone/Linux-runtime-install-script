@@ -206,20 +206,16 @@ modify_docker_compose_file() {
     log_headline "17:05"
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
-
     local HARDWARE_MANUFACTURER=""
     local HARDWARE_MANUFACTURER_URL=""
     local HARDWARE_MODEL_NAME=""
     local HARDWARE_SERIAL_NUMBER=""
+    local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
 
     if evaluate_yes_no_answer "Do you want to use default parameters? (Yes/no)" "y"; then
-        HARDWARE_MANUFACTURER="N/A"
-        HARDWARE_MANUFACTURER_URL="N/A"
-        HARDWARE_MODEL_NAME="Generic PC"
-        HARDWARE_SERIAL_NUMBER=""
+        log_success "Docker-compose file will not be modified, default setting will be used!"
     else
         log_message "Please provide information about the hardware which hosts the NUPANO Runtime:\n"
-        local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
         while true; do
             get_checked_user_input "Please enter the hardware manufacturer name: " \
                 "$NAME_REGEX" \
@@ -251,27 +247,28 @@ modify_docker_compose_file() {
                 break
             fi
         done
+
+        log_message "Modifying the Docker-Comnpose file..."
+        #set Runtime image version
+        sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" DOCKER_COMPOSE_FILE_PATH
+        
+        #set environmental variable
+        sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" DOCKER_COMPOSE_FILE_PATH
+        sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER_URL}/g" DOCKER_COMPOSE_FILE_PATH
+        sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer=${HARDWARE_MODEL_NAME}/g" DOCKER_COMPOSE_FILE_PATH
+
+        #special handling of serial number if not given, the UUID of the Runtime will be used
+        if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
+            #serial number not given -> do nothing ->  UUID will be used
+            sed -i -e "s/#- nupano.description.serial-number=/#- nupano.description.serial-number=/g" DOCKER_COMPOSE_FILE_PATH
+        else
+            #serial number given -> use data
+            sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" DOCKER_COMPOSE_FILE_PATH
+        fi
+
+        log_success "Docker-compose file has been modified!"
+
     fi
-
-    log_message "Modifying the Docker-Comnpose file..."
-    #set Runtime image version
-    sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" docker-compose.yml
-    
-    #set environmental variable
-    sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" docker-compose.yml
-    sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER_URL}/g" docker-compose.yml
-    sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.manufacturer=${HARDWARE_MODEL_NAME}/g" docker-compose.yml
-
-    #special handling of serial number if not given, the UUID of the Runtime will be used
-    if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
-        #serial number not given -> do nothing ->  UUID will be used
-        sed -i -e "s/#- nupano.description.serial-number=/#- nupano.description.serial-number=/g" docker-compose.yml
-    else
-        #serial number given -> use data
-        sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" docker-compose.yml
-    fi
-
-    log_success "Docker-compose file has been modified!"
 }
 
 start_nupano_runtime() {
