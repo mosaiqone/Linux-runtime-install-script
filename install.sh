@@ -264,6 +264,7 @@ modify_docker_compose_file() {
     #special handling of serial number if not given, the UUID of the Runtime will be used
     if [ -z "${HARDWARE_SERIAL_NUMBER}" ]; then
         #serial number not given -> do nothing ->  UUID will be used
+        sed -i -e "s/#- nupano.description.serial-number=/#- nupano.description.serial-number=/g" docker-compose.yml
     else
         #serial number given -> use data
         sed -i -e "s/#- nupano.description.serial-number=/- nupano.description.serial-number='${HARDWARE_SERIAL_NUMBER}'/g" docker-compose.yml
