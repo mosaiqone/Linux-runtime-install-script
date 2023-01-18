@@ -8,7 +8,6 @@ services:
     environment:
       - logging.level.com.nupano=INFO #INFO or DEBUG
       - nupano.description.manufacturer=not specified
-      - nupano.description.manufacturer-url=not specified
       - nupano.description.model-name=Generic PC
       - nupano.description.serial-number= #default: UUID of Runtime
     volumes:

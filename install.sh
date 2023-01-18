@@ -206,7 +206,6 @@ modify_docker_compose_file() {
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
     local HARDWARE_MANUFACTURER=""
-    local HARDWARE_MANUFACTURER_URL=""
     local HARDWARE_MODEL_NAME=""
     local HARDWARE_SERIAL_NUMBER=""
     local -r NAME_REGEX='^[A-Za-z0-9\ _\.-]+$'
@@ -220,10 +219,6 @@ modify_docker_compose_file() {
                 "$NAME_REGEX" \
                 "hardwareManufacturer"
 
-            get_checked_user_input "Please enter the hardware manufacturer URL without 'https://': " \
-                '[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]' \
-                "hardwareManufacturerUrl"
-
             get_checked_user_input "Please enter the hardware model name: " \
                 "$NAME_REGEX" \
                 "hardwareModelName"
@@ -234,13 +229,11 @@ modify_docker_compose_file() {
 
             log_message "\nThe NUPANO Runtime parameters are:\n" 
             log_message_safe "Manufacturer name: '${hardwareManufacturer}'"
-            log_message_safe "Manufacturer URL: '${hardwareManufacturerUrl}'"
             log_message_safe "Model name: '${hardwareModelName}'"
             log_message_safe "Serial number: '${hardwareSerialNumber}'"
             
             if evaluate_yes_no_answer "Are you sure that the entered inputs are correct? (Yes/no)" "y"; then
                 HARDWARE_MANUFACTURER="$hardwareManufacturer"
-                HARDWARE_MANUFACTURER_URL="$hardwareManufacturerUrl"
                 HARDWARE_MODEL_NAME="$hardwareModelName"
                 HARDWARE_SERIAL_NUMBER="$hardwareSerialNumber"
                 break
@@ -253,7 +246,6 @@ modify_docker_compose_file() {
         
         #set environmental variable
         sed -i -e "s/nupano.description.manufacturer=not specified/nupano.description.manufacturer=${HARDWARE_MANUFACTURER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
-        sed -i -e "s/nupano.description.manufacturer-url=not specified/nupano.description.manufacturer-url=${HARDWARE_MANUFACTURER_URL}/g" "${DOCKER_COMPOSE_FILE_PATH}"
         sed -i -e "s/nupano.description.model-name=Generic PC/nupano.description.model-name=${HARDWARE_MODEL_NAME}/g" "${DOCKER_COMPOSE_FILE_PATH}"
         sed -i -e "s/nupano.description.serial-number=/nupano.description.serial-number=${HARDWARE_SERIAL_NUMBER}/g" "${DOCKER_COMPOSE_FILE_PATH}"
 
