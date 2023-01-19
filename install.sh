@@ -35,7 +35,7 @@ check_linux_distribution() {
     readonly NUPANO_LINUX_DISTRIBUTION=$(lsb_release -s -i | tr '[:upper:]' '[:lower:]')   
     
     if [[ $NUPANO_LINUX_DISTRIBUTION != "debian" && $NUPANO_LINUX_DISTRIBUTION != "ubuntu" ]]; then
-        printf "${RED}Unsupported Linux distribution [$(lsb_release -s -i)]${NC}\n" >&2        
+        printf "${RED}Unsupported Linux distribution!${NC}\n" >&2        
         printf "${RED}Please use Debian or Ubuntu${NC}\n" >&2        
     	exit 1
     fi
