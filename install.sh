@@ -263,6 +263,19 @@ start_nupano_runtime() {
     docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up -d
 }
 
+finished_message() {
+    log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
+    
+    log_message "\n${CYAN}"
+    log_message "################################################\n"
+    log_message "#             Congratulations!                 #\n"
+    log_message "# You have successlly installed NUPANO Runtime #\n"
+    log_message "# Please check the following link:             #\n"
+    log_message "# http://${hostname -I}:61100/description      #\n"
+    log_message "################################################\n"
+    log_message "${NC}\n\n"
+}
+
 
 ################################################################################
 # LOGGING Definitions
@@ -342,5 +355,4 @@ install_docker
 get_docker_compose_file
 modify_docker_compose_file
 start_nupano_runtime
-
-log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
+finished_message
