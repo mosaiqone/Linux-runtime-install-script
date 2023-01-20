@@ -152,7 +152,6 @@ install_docker() {
     log_success "Docker installation done"
 }
 
-
 get_checked_user_input() {
     local -r PROMPT=$1
     local -r CHECK_REGEX=$2
@@ -201,7 +200,6 @@ trim() {
 make_lowercase() {
     echo $(echo "$1" | tr '[:upper:]' '[:lower:]')
 }
-
 
 get_docker_compose_file() {
     wget -O "${NUPANO_FOLDER}/docker-compose.yml" "${NUPANO_DOCKER_COMPOSE_FILE_URL}"
@@ -275,9 +273,8 @@ finished_message() {
     log_message "        Please check the following link:        \n"
     log_message "     http://${NUPANO_RUNTIME_IP}:61100/description\n"
     log_message "################################################\n"
-    log_message "${NC}\n\n"
+    log_message "${NC}\n"
 }
-
 
 ################################################################################
 # LOGGING Definitions
