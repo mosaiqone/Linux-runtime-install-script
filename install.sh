@@ -246,7 +246,7 @@ modify_docker_compose_file() {
             fi
         done
 
-        log_message "Modifying the Docker-Comnpose file...\n"
+        log_message "\n\nModifying the Docker-Comnpose file...\n"
         #set Runtime image version
         sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" "${DOCKER_COMPOSE_FILE_PATH}"
         
@@ -260,6 +260,7 @@ modify_docker_compose_file() {
 }
 
 start_nupano_runtime() {
+    log_headline "Starting the Runtime..."
     docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up -d
 }
 
