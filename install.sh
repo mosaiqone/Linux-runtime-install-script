@@ -267,12 +267,12 @@ finished_message() {
     
     readonly NUPANO_RUNTIME_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
     log_message "\n${CYAN}"
-    log_message "################################################\n"
-    log_message "                Congratulations!                \n"
-    log_message " You have successfully installed NUPANO Runtime \n"
-    log_message "        Please check the following link:        \n"
-    log_message "     http://${NUPANO_RUNTIME_IP}:61100/description\n"
-    log_message "################################################\n"
+    log_message "####################################################\n"
+    log_message "                Congratulations!                    \n"
+    log_message "   You have successfully installed NUPANO Runtime   \n"
+    log_message " You can check the Runtime with the following link: \n"
+    log_message "       http://${NUPANO_RUNTIME_IP}:61100/description\n"
+    log_message "####################################################\n"
     log_message "${NC}\n"
 }
 
