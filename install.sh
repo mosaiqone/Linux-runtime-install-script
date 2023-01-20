@@ -266,13 +266,13 @@ start_nupano_runtime() {
 finished_message() {
     log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
     
-    readonly NUPANO_RUNTIME_HOSTNAME=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+    readonly NUPANO_RUNTIME_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
     log_message "\n${CYAN}"
     log_message "##############################################\n"
     log_message "               Congratulations!               \n"
     log_message " You have successlly installed NUPANO Runtime \n"
     log_message "       Please check the following link:       \n"
-    log_message " http://${NUPANO_RUNTIME_HOSTNAME}:61100/description\n"
+    log_message "    http://${NUPANO_RUNTIME_IP}:61100/description\n"
     log_message "##############################################\n"
     log_message "${NC}\n\n"
 }
