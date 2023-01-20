@@ -13,9 +13,6 @@ readonly CYAN='\e[1;36m'
 readonly ORANGE='\e[1;33m'
 readonly NC='\e[0m'
 
-
-
-
 ################################################################################
 # Function Definition
 ################################################################################
@@ -34,9 +31,20 @@ check_root_priviliges() {
     readonly SCRIPT_USER_HOME=/home/${SCRIPT_USER}
 }
 
+check_linux_distribution() {
+    readonly NUPANO_LINUX_DISTRIBUTION=$(lsb_release -s -i | tr '[:upper:]' '[:lower:]')   
+    
+    if [[ $NUPANO_LINUX_DISTRIBUTION != "debian" && $NUPANO_LINUX_DISTRIBUTION != "ubuntu" ]]; then
+        printf "${RED}Unsupported Linux distribution!${NC}\n" >&2        
+        printf "${RED}Please use Debian or Ubuntu${NC}\n" >&2        
+    	exit 1
+    fi
+}
+
 check_runtime_version_given() {
     if [[ $# -lt 1 ]]; then
-      log_failure "Please provide a Runtime version string or use 'latest'"
+      printf " ${RED}-> Usage: sudo install.sh [version]${NC}\n" >&2
+      printf " ${RED}-> Please provide a Runtime version string or use 'latest'${NC}\n" >&2
       exit 1
     fi
     readonly NUPANO_RUNTIME_VERSION=$1    
@@ -47,7 +55,6 @@ create_nupano_folder() {
     mkdir -p "$NUPANO_FOLDER"
     chown -R "$SCRIPT_USER" "$NUPANO_FOLDER"
 }
-
 
 welcome_message() {
     clear
@@ -66,7 +73,6 @@ welcome_message() {
     log_message "/_/|_|\_,_/_//_/\__/_/_/_/_/\__/ /___/_//_/___/\__/\_,_/_/_/\__/_/   \n"
     log_message "${NC}\n\n"
 }
-
 
 ensure_dependencies() {
     log_headline "Installing required dependencies"
@@ -93,9 +99,9 @@ ensure_dependency() {
 }
 
 uninstall_docker() {
-    #source: https://docs.docker.com/engine/install/ubuntu/
+    #source: https://docs.docker.com/engine/install/NUPANO_LINUX_DISTRIBUTION/
     log_headline "Uninstalling previously installed Docker version"
-    log_message "Initiate uninstall of docker..." 
+    log_message "Initiate uninstall of docker...\n" 
     #apt-get -q -y remove docker docker-engine docker.io containerd runc || true
     #call each command inividually to ensure continuation in case a removal fails (e.g. because the software was not installed)
     apt-get -q -y remove docker || true
@@ -112,10 +118,10 @@ uninstall_docker() {
 }
 
 install_docker() {
-    #source: https://docs.docker.com/engine/install/ubuntu/
+    #source: https://docs.docker.com/engine/install/NUPANO_LINUX_DISTRIBUTION/
 
     log_headline "Install Docker and Docker Compose"
-    log_message "Update and install required tools"
+    log_message "Update and install required tools\n"
     apt-get -q -y update
     apt-get -q -y install ca-certificates curl gnupg lsb-release
 
@@ -125,15 +131,15 @@ install_docker() {
 
     log_success "Update and installation required tools done"
 
-    log_message "Initiate docker installation…" 
-    log_message "Add Docker's official GPG key"
+    log_message "Initiate docker installation…\n" 
+    log_message "Add Docker's official GPG key\n"
     mkdir -p /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    curl -fsSL "https://download.docker.com/linux/$NUPANO_LINUX_DISTRIBUTION/gpg" | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
-    log_message "setup Docker repository"
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    log_message "setup Docker repository\n"
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$NUPANO_LINUX_DISTRIBUTION $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-    log_message "Install Docker Engine and Docker compose"
+    log_message "Install Docker Engine and Docker compose\n"
     chmod a+r /etc/apt/keyrings/docker.gpg
     apt-get -q -y update
     
@@ -145,7 +151,6 @@ install_docker() {
 
     log_success "Docker installation done"
 }
-
 
 get_checked_user_input() {
     local -r PROMPT=$1
@@ -160,7 +165,6 @@ get_checked_user_input() {
     done
     declare -g "$RETURN_VALUE_NAME"="$input_value"
 }
-
 
 evaluate_yes_no_answer() {
     local -r PROMPT=$1
@@ -197,12 +201,12 @@ make_lowercase() {
     echo $(echo "$1" | tr '[:upper:]' '[:lower:]')
 }
 
-
 get_docker_compose_file() {
     wget -O "${NUPANO_FOLDER}/docker-compose.yml" "${NUPANO_DOCKER_COMPOSE_FILE_URL}"
 }
 
 modify_docker_compose_file() {
+    clear
     log_headline "Configuring the Runtime..."
     readonly DOCKER_COMPOSE_FILE_PATH="${NUPANO_FOLDER}/docker-compose.yml"
     local HARDWARE_MANUFACTURER=""
@@ -240,7 +244,7 @@ modify_docker_compose_file() {
             fi
         done
 
-        log_message "Modifying the Docker-Comnpose file..."
+        log_message "\nModifying the Docker-Comnpose file...\n"
         #set Runtime image version
         sed -i -e "s/:latest/:${NUPANO_RUNTIME_VERSION}/g" "${DOCKER_COMPOSE_FILE_PATH}"
         
@@ -254,9 +258,23 @@ modify_docker_compose_file() {
 }
 
 start_nupano_runtime() {
+    log_headline "Starting the Runtime..."
     docker compose -f ${NUPANO_FOLDER}/docker-compose.yml up -d
 }
 
+finished_message() {
+    log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
+    
+    local NUPANO_RUNTIME_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+    log_message "\n${CYAN}"
+    log_message "####################################################\n"
+    log_message "                Congratulations!                    \n"
+    log_message "   You have successfully installed NUPANO Runtime   \n"
+    log_message " You can check the Runtime with the following link: \n"
+    log_message "       http://${NUPANO_RUNTIME_IP}:61100/description\n"
+    log_message "####################################################\n"
+    log_message "${NC}\n"
+}
 
 ################################################################################
 # LOGGING Definitions
@@ -325,7 +343,8 @@ log_warning() {
 # Installation Script Sequence
 ################################################################################
 check_root_priviliges
-check_runtime_version_given "$1"
+check_linux_distribution
+check_runtime_version_given "$@"
 create_nupano_folder
 create_log_file
 welcome_message
@@ -335,5 +354,4 @@ install_docker
 get_docker_compose_file
 modify_docker_compose_file
 start_nupano_runtime
-
-log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
+finished_message
