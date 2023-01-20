@@ -41,6 +41,21 @@ check_linux_distribution() {
     fi
 }
 
+check_ip_address() {
+    while IFS= read -r line; do
+        if [ ! -z "$line"  ]; then
+                INTERFACE=$(echo $line | awk '{print $2}')
+                TYPE=$(nmcli -f general.type device show $INTERFACE | awk '{print $2}')
+                CONNECTION=$(nmcli -f general.connection device show $INTERFACE | awk '{print $2}')
+                IPADDRESS=$(nmcli -f ip4.address device show $INTERFACE | awk '{print $2}')
+
+                if [[ $TYPE == 'ethernet' && $CONNECTION == 'Wired' ]]; then
+                        readonly NUPANO_RUNTIME_IP=$(echo $IPADDRESS | awk -F/ '{print $1}')
+                fi
+        fi
+    done <<< $(nmcli -f general.device device show)
+}
+
 check_runtime_version_given() {
     if [[ $# -lt 1 ]]; then
       printf " ${RED}-> Usage: sudo install.sh [version]${NC}\n" >&2
@@ -265,7 +280,6 @@ start_nupano_runtime() {
 finished_message() {
     log_success "NUPANO RUNTIME INSTALLATION FINISHED!"
     
-    local NUPANO_RUNTIME_IP=$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
     log_message "\n${CYAN}"
     log_message "####################################################\n"
     log_message "                Congratulations!                    \n"
@@ -344,6 +358,7 @@ log_warning() {
 ################################################################################
 check_root_priviliges
 check_linux_distribution
+check_ip_address
 check_runtime_version_given "$@"
 create_nupano_folder
 create_log_file
