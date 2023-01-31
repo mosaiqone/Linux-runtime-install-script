@@ -285,7 +285,7 @@ finished_message() {
     log_message "                Congratulations!                    \n"
     log_message "   You have successfully installed NUPANO Runtime   \n"
     log_message " You can check the Runtime with the following link: \n"
-    log_message "       http://${NUPANO_RUNTIME_IP}:61100/description\n"
+    log_message "             http://${NUPANO_RUNTIME_IP}:61100      \n"
     log_message "####################################################\n"
     log_message "${NC}\n"
 }
