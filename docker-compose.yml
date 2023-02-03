@@ -4,7 +4,7 @@ services:
   runtime:
     user: root #required for windows to access docker.sock
     restart: always
-    image: public.ecr.aws/d9n0g1v8/nupano-runtime:latest
+    image: public.ecr.aws/nupano/nupano-runtime:latest
     environment:
       - logging.level.com.nupano=INFO #INFO or DEBUG
       - nupano.description.manufacturer=not specified
@@ -22,7 +22,7 @@ services:
 
   discovery:
     restart: always
-    image: public.ecr.aws/d9n0g1v8/nupano-runtime-discovery:latest
+    image: public.ecr.aws/nupano/nupano-runtime-discovery:latest
     network_mode: host #-> SSDP
     environment:
       - logging.level.com.nupano=INFO #INFO or DEBUG
@@ -30,7 +30,7 @@ services:
   updater:
     user: root #required for windows to access docker.sock
     restart: always
-    image: public.ecr.aws/d9n0g1v8/nupano-runtime-updater:latest
+    image: public.ecr.aws/nupano/nupano-runtime-updater:latest
     environment:
       - logging.level.com.nupano=INFO #INFO or DEBUG
     volumes:
